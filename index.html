@@ -1,58 +1,21 @@
-<?php
-include "db_connection.php";
-
-if (isset($_POST['username']) && isset($_POST['password'])) {
-    function validate($data) {
-        $data = trim($data);
-        $data = stripslashes($data);
-        $data = htmlspecialchars($data);
-        return $data;
-    }
-
-    $user = validate($_POST['username']);
-    $pass = validate($_POST['password']);
-
-    if (empty($user) || empty($pass)) {
-        header("Location: Loginpage.php?error=Invalid credentials");
-        exit();
-    } else {
-
-        $hashed_pass= SHA1($pass);
-
-        $sql = "SELECT * FROM Users WHERE Username='$user' AND Password='$hashed_pass'";
-
-        $result = mysqli_query($conn, $sql);
-
-        if ($result) {
-            if (mysqli_num_rows($result) == 1) {
-
-                $row = mysqli_fetch_assoc($result);
-                $role = $row["Role"]; 
-
-                
-                if ($role == "Admin") {
-                    header("Location: admin.php");
-                } elseif ($role == "Parent") {
-                    header("Location: Parent.php");
-                } elseif ($role == "Supervisor") {
-                    header("Location: supervisor.php");
-                } else {
-                    // Unknown role
-                    header("Location: Loginpage.php");
-                }
-
-                exit();
-            } else {
-                header("Location: Loginpage.php?error=Invalid credentials");
-                exit();
-            }
-        } else {
-            header("Location: Loginpage.php?error=Database error");
-            exit();
-        }
-    }
-} else {
-    header("Location: Loginpage.php");
-    exit();
-}
-?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Security School Bus System</title> 
+    <link rel="stylesheet" type="text/css" href="style.css"> 
+</head>
+<body>
+    <img src="images/first.png" alt="Login Image">
+    <form action="login.php" method="post">
+        <h2>Welcome to School Bus Security System</h2>
+        <?php if (isset($_GET['error'])) { ?>
+         <p class="error-message"><?php echo $_GET['error']; ?></p>
+        <?php } ?>  
+        <label>Username</label>
+        <input type="text" name="username" placeholder="username"><br>
+        <label>Password</label>
+        <input type="password" name="password" placeholder="password"><br>
+        <button type="submit">Login</button>
+    </form>
+</body>
+</html>
